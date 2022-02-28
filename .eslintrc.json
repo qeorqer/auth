@@ -1,0 +1,19 @@
+{
+    "root": true,
+    "env": {
+        "node": true,
+        "commonjs": true,
+        "es2021": true
+    },
+    "extends": ["eslint:recommended", "prettier"],
+    "parserOptions": {
+        "ecmaVersion": 2021
+    },
+    "rules": {
+        "semi": ["error", "always"],
+        "no-unreachable": ["error", "always"],
+        "no-unused-vars": ["error", "always"],
+        "no-console": "error",
+        "no-multiple-empty-lines": 2
+    }
+}
