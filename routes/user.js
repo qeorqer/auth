@@ -10,7 +10,7 @@ router.post('/login', userController.login);
 
 router.post('/refreshToken', userController.refresh);
 
-router.post('/logout', () => {});
+router.post('/logout', userController.logOut);
 
 router.post('/resetPassword', () => {});
 

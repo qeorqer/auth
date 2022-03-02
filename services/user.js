@@ -41,3 +41,8 @@ module.exports.refresh = async (refreshToken) => {
 
   return await updateTokens(token.userId, token.tokenId, true);
 };
+
+module.exports.logOut = async (refreshToken) => {
+  const payload = jwt.verify(refreshToken, process.env.JWT_REFRESH_SECRET);
+  return Token.findOneAndRemove({ tokenId: payload.id });
+};

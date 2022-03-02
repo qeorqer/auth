@@ -32,3 +32,14 @@ module.exports.refresh = async (req, res, next) => {
     console.log(error);
   }
 };
+
+module.exports.logOut = async (req, res, next) => {
+  try {
+    const { refreshToken } = req.body;
+
+    await userService.logOut(refreshToken);
+    res.json({message: 'logged out successfully'});
+  } catch (error) {
+    console.log(error);
+  }
+};
