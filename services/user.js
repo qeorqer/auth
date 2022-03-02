@@ -1,7 +1,7 @@
 const bcrypt = require('bcrypt');
 
 const User = require('../models/user');
-const updateTokens = require('./token');
+const { updateTokens } = require('./token');
 const jwt = require('jsonwebtoken');
 const Token = require('../models/token');
 
@@ -28,13 +28,12 @@ module.exports.logIn = async (email, password) => {
 };
 
 module.exports.refresh = async (refreshToken) => {
-  const payload = jwt.verify(refreshToken, process.env.JWT_REFRESH_SECRET);
-  if (payload.type !== 'refresh') {
+  const verifiedToken = jwt.verify(refreshToken, process.env.JWT_REFRESH_SECRET);
+  if (verifiedToken.type !== 'refresh') {
     return res.status(401).json({ message: 'unauthorized' });
   }
 
-  const token = await Token.findOne({ tokenId: payload.id });
-
+  const token = await Token.findOne({ tokenId: verifiedToken.id });
   if (token === null) {
     return res.status(401).json({ message: 'Invalid token' });
   }
@@ -43,6 +42,6 @@ module.exports.refresh = async (refreshToken) => {
 };
 
 module.exports.logOut = async (refreshToken) => {
-  const payload = jwt.verify(refreshToken, process.env.JWT_REFRESH_SECRET);
-  return Token.findOneAndRemove({ tokenId: payload.id });
+  const verifiedToken = jwt.verify(refreshToken, process.env.JWT_REFRESH_SECRET);
+  return Token.findOneAndRemove({ tokenId: verifiedToken.id });
 };
