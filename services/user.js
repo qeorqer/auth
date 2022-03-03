@@ -6,6 +6,11 @@ const jwt = require('jsonwebtoken');
 const Token = require('../models/token');
 
 module.exports.signUp = async (email, password) => {
+  const isEmailUsed = await User.findOne({ email });
+  if (isEmailUsed) {
+    return res.status(400).json({ message: 'Email already taken' });
+  }
+
   const hashedPassword = await bcrypt.hash(password, 10);
 
   const user = new User({ email, password: hashedPassword });
@@ -16,6 +21,9 @@ module.exports.signUp = async (email, password) => {
 
 module.exports.logIn = async (email, password) => {
   const user = await User.findOne({ email });
+  if (!user) {
+    return res.status(400).json({ message: 'There is no user with this email' });
+  }
   const isPasswordCorrect = await bcrypt.compare(password, user.password);
 
   if (!isPasswordCorrect) {
@@ -24,7 +32,7 @@ module.exports.logIn = async (email, password) => {
 
   const tokens = await updateTokens(user._id);
 
-  return {tokens, user};
+  return { tokens, user };
 };
 
 module.exports.refresh = async (refreshToken) => {
