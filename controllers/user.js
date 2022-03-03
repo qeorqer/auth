@@ -69,7 +69,6 @@ module.exports.logOut = async (req, res, next) => {
 module.exports.activate = async (req, res, next) => {
   try {
     const { link } = req.params;
-    console.log(req.params);
     const errors = validationResult(req);
 
     if (!errors.isEmpty()) {

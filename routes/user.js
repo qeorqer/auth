@@ -70,7 +70,4 @@ router.get(
   userController.activate,
 );
 
-router.post('/resetPassword', () => {
-});
-
 module.exports = router;
