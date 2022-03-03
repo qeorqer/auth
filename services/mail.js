@@ -6,12 +6,12 @@ const transporter = nodemailer.createTransport({
   secure: false,
   auth: {
     user: process.env.MAIL_USER,
-    pass: process.env.MAIL_PASSWORD
-  }
+    pass: process.env.MAIL_PASSWORD,
+  },
 });
 
-module.exports.sendActivationMail = async (to, link) => {
-  await transporter.sendMail({
+module.exports.sendActivationMail = (to, link) => {
+  transporter.sendMail({
     from: process.env.MAIL_USER,
     to,
     subject: 'Account activation',
@@ -20,8 +20,8 @@ module.exports.sendActivationMail = async (to, link) => {
       `
                     <div>
                         <h1>For activation follow the link</h1>
-                        <a href="${link}">${link}</a>
+                        <a href='${link}'>${link}</a>
                     </div>
-                `
-  })
-}
+                `,
+  });
+};
