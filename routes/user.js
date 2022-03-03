@@ -5,7 +5,8 @@ const userController = require('../controllers/user');
 
 const router = Router();
 
-router.post('/signup',
+router.post(
+  '/signup',
   [
     body('email')
       .isEmail()
@@ -28,7 +29,9 @@ router.post('/signup',
   userController.signUp,
 );
 
-router.post('/login', [
+router.post(
+  '/login',
+  [
     body('email')
       .isEmail()
       .withMessage('Email is incorrect')
@@ -41,9 +44,23 @@ router.post('/login', [
   ],
   userController.login);
 
-router.post('/refreshToken', userController.refresh);
+router.post(
+  '/refreshToken',
+  body('refreshToken')
+    .isString()
+    .trim()
+    .withMessage('Refresh token is required'),
+  userController.refresh,
+);
 
-router.post('/logout', userController.logOut);
+router.post(
+  '/logout',
+  body('refreshToken')
+    .isString()
+    .trim()
+    .withMessage('Refresh token is required'),
+  userController.logOut,
+);
 
 router.post('/resetPassword', () => {
 });
