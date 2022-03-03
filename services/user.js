@@ -1,4 +1,5 @@
 const bcrypt = require('bcrypt');
+const UUID = require('uuid');
 
 const User = require('../models/user');
 const { updateTokens } = require('./token');
@@ -8,12 +9,13 @@ const Token = require('../models/token');
 module.exports.signUp = async (email, password) => {
   const isEmailUsed = await User.findOne({ email });
   if (isEmailUsed) {
-    return res.status(400).json({ message: 'Email already taken' });
+    throw new Error('Email already taken');
   }
 
   const hashedPassword = await bcrypt.hash(password, 10);
+  const activationLink = UUID.v4();
 
-  const user = new User({ email, password: hashedPassword });
+  const user = new User({ email, password: hashedPassword, activationLink });
   await user.save();
 
   return user;
@@ -22,12 +24,12 @@ module.exports.signUp = async (email, password) => {
 module.exports.logIn = async (email, password) => {
   const user = await User.findOne({ email });
   if (!user) {
-    return res.status(400).json({ message: 'There is no user with this email' });
+    throw new Error('There is no user with this email');
   }
   const isPasswordCorrect = await bcrypt.compare(password, user.password);
 
   if (!isPasswordCorrect) {
-    return res.status(400).json({ message: 'Entered credentials are invalid' });
+    throw new Error('Entered credentials are invalid');
   }
 
   const tokens = await updateTokens(user._id);
@@ -38,12 +40,12 @@ module.exports.logIn = async (email, password) => {
 module.exports.refresh = async (refreshToken) => {
   const verifiedToken = jwt.verify(refreshToken, process.env.JWT_REFRESH_SECRET);
   if (verifiedToken.type !== 'refresh') {
-    return res.status(401).json({ message: 'unauthorized' });
+    throw new Error('You are unauthorized');
   }
 
   const token = await Token.findOne({ tokenId: verifiedToken.id });
   if (token === null) {
-    return res.status(401).json({ message: 'Invalid token' });
+    throw new Error('The token is invalid');
   }
 
   return await updateTokens(token.userId, token.tokenId, true);
