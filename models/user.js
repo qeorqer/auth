@@ -7,4 +7,10 @@ const User = new Schema({
   activationLink: {type: String, default: ''},
 })
 
+User.index(
+  { createdAt: 1 },
+  { expireAfterSeconds: 60 * 60, partialFilterExpression: { isActivated: false } },
+);
+
+
 module.exports = model('User', User);
