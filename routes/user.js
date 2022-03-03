@@ -1,5 +1,5 @@
 const { Router } = require('express');
-const { body } = require('express-validator');
+const { body, param } = require('express-validator');
 
 const userController = require('../controllers/user');
 
@@ -60,6 +60,14 @@ router.post(
     .trim()
     .withMessage('Refresh token is required'),
   userController.logOut,
+);
+
+router.get(
+  '/activate/:link',
+  param('link')
+    .isString()
+    .trim(),
+  userController.activate,
 );
 
 router.post('/resetPassword', () => {

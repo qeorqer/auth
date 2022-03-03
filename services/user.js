@@ -1,10 +1,11 @@
-const bcrypt = require('bcrypt');
 const UUID = require('uuid');
+const bcrypt = require('bcrypt');
+const jwt = require('jsonwebtoken');
 
 const User = require('../models/user');
-const { updateTokens } = require('./token');
-const jwt = require('jsonwebtoken');
 const Token = require('../models/token');
+const { updateTokens } = require('./token');
+const { sendActivationMail } = require('./mail');
 
 module.exports.signUp = async (email, password) => {
   const isEmailUsed = await User.findOne({ email });
@@ -18,14 +19,20 @@ module.exports.signUp = async (email, password) => {
   const user = new User({ email, password: hashedPassword, activationLink });
   await user.save();
 
-  return user;
+  sendActivationMail(email, `${process.env.API_URL}/activate/${activationLink}`);
 };
 
 module.exports.logIn = async (email, password) => {
   const user = await User.findOne({ email });
+
   if (!user) {
     throw new Error('There is no user with this email');
   }
+
+  if (!user.isActivated) {
+    throw new Error('Account has to be activated first. Check your email');
+  }
+
   const isPasswordCorrect = await bcrypt.compare(password, user.password);
 
   if (!isPasswordCorrect) {
@@ -54,4 +61,15 @@ module.exports.refresh = async (refreshToken) => {
 module.exports.logOut = async (refreshToken) => {
   const verifiedToken = jwt.verify(refreshToken, process.env.JWT_REFRESH_SECRET);
   return Token.findOneAndRemove({ tokenId: verifiedToken.id });
+};
+
+module.exports.activate = async (activationLink) => {
+  const user = await User.findOne({ activationLink });
+
+  if (!user) {
+    throw new Error('Invalid link');
+  }
+
+  user.isActivated = true;
+  await user.save();
 };

@@ -11,8 +11,8 @@ module.exports.signUp = async (req, res, next) => {
       return res.status(400).json({ errors: errors.array() });
     }
 
-    const user = userService.signUp(email, password);
-    res.status(201).json({ message: 'User signed up successfully', user });
+    await userService.signUp(email, password);
+    res.status(201).json({ message: 'User signed up successfully' });
   } catch (error) {
     console.log(error);
   }
@@ -61,6 +61,23 @@ module.exports.logOut = async (req, res, next) => {
 
     await userService.logOut(refreshToken);
     res.json({message: 'logged out successfully'});
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+module.exports.activate = async (req, res, next) => {
+  try {
+    const { link } = req.params;
+    console.log(req.params);
+    const errors = validationResult(req);
+
+    if (!errors.isEmpty()) {
+      return res.status(400).json({ errors: errors.array() });
+    }
+
+    await userService.activate(link);
+    res.json({message: 'Account activated successfully'});
   } catch (error) {
     console.log(error);
   }
