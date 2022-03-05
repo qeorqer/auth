@@ -4,6 +4,7 @@ const express = require('express');
 const mongoose = require('mongoose');
 
 const userRouter = require('./routes/user');
+const errorMiddleware = require('./middlewares/errors-middleware');
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -11,6 +12,7 @@ const PORT = process.env.PORT || 5000;
 app.use(express.json());
 
 app.use(userRouter);
+app.use(errorMiddleware);
 
 const start = async () => {
   try {
@@ -19,10 +21,10 @@ const start = async () => {
       useUnifiedTopology: true,
     });
 
-    app.listen(PORT, () => console.log(`Server is running on ${PORT} port...`))
-  } catch (error){
+    app.listen(PORT, () => console.log(`Server is running on ${PORT} port...`));
+  } catch (error) {
     console.log(error);
   }
-}
+};
 
 start();
