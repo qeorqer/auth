@@ -1,12 +1,13 @@
 const jwt = require('jsonwebtoken');
 const UUID = require('uuid');
 const Token = require('../models/token');
+const ApiError = require('../exceptions/api-errors');
 
 module.exports.verifyAccess = (accessToken) => {
   try {
     return jwt.verify(accessToken, process.env.JWT_ACCESS_SECRET);
   } catch (error) {
-    console.log(error);
+    throw ApiError.BadRequest(error.message);
   }
 };
 
@@ -14,7 +15,7 @@ module.exports.verifyRefresh = (refreshToken) => {
   try {
     return jwt.verify(refreshToken, process.env.JWT_REFRESH_SECRET);
   } catch (error) {
-    console.log(error);
+    throw ApiError.BadRequest(error.message);
   }
 };
 

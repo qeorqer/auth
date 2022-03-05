@@ -6,11 +6,12 @@ const User = require('../models/user');
 const Token = require('../models/token');
 const { updateTokens } = require('./token');
 const { sendActivationMail } = require('./mail');
+const ApiError = require('../exceptions/api-errors');
 
 module.exports.signUp = async (email, password) => {
   const isEmailUsed = await User.findOne({ email });
   if (isEmailUsed) {
-    throw new Error('Email already taken');
+    throw ApiError.BadRequest('Email already taken');
   }
 
   const hashedPassword = await bcrypt.hash(password, 10);
@@ -26,17 +27,17 @@ module.exports.logIn = async (email, password) => {
   const user = await User.findOne({ email });
 
   if (!user) {
-    throw new Error('There is no user with this email');
+    throw ApiError.BadRequest('There is no user with this email');
   }
 
   if (!user.isActivated) {
-    throw new Error('Account has to be activated first. Check your email');
+    throw ApiError.Forbidden('Account has to be activated first. Check your email');
   }
 
   const isPasswordCorrect = await bcrypt.compare(password, user.password);
 
   if (!isPasswordCorrect) {
-    throw new Error('Entered credentials are invalid');
+    throw ApiError.BadRequest('Entered credentials are invalid');
   }
 
   const tokens = await updateTokens(user._id);
@@ -47,12 +48,13 @@ module.exports.logIn = async (email, password) => {
 module.exports.refresh = async (refreshToken) => {
   const verifiedToken = jwt.verify(refreshToken, process.env.JWT_REFRESH_SECRET);
   if (verifiedToken.type !== 'refresh') {
-    throw new Error('You are unauthorized');
+    throw ApiError.UnauthorizedError('You are unauthorized');
+    throw new Error('');
   }
 
   const token = await Token.findOne({ tokenId: verifiedToken.id });
   if (token === null) {
-    throw new Error('The token is invalid');
+    throw ApiError.BadRequest('The token is invalid');
   }
 
   return await updateTokens(token.userId, token.tokenId, true);
@@ -67,7 +69,7 @@ module.exports.activate = async (activationLink) => {
   const user = await User.findOne({ activationLink });
 
   if (!user) {
-    throw new Error('Invalid link');
+    throw ApiError.BadRequest('Invalid link');
   }
 
   user.isActivated = true;
