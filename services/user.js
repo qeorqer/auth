@@ -6,7 +6,7 @@ const User = require('../models/user');
 const Token = require('../models/token');
 const { updateTokens } = require('./token');
 const { sendActivationMail } = require('./mail');
-const ApiError = require('../exceptions/api-errors');
+const ApiError = require('../exceptions/ApiErrors');
 
 module.exports.signUp = async (email, password) => {
   const isEmailUsed = await User.findOne({ email });

@@ -1,7 +1,7 @@
 const jwt = require('jsonwebtoken');
 const UUID = require('uuid');
 const Token = require('../models/token');
-const ApiError = require('../exceptions/api-errors');
+const ApiError = require('../exceptions/ApiErrors');
 
 module.exports.verifyAccess = (accessToken) => {
   try {

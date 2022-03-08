@@ -1,7 +1,7 @@
 const { validationResult } = require('express-validator');
 
 const userService = require('../services/user');
-const ApiError = require('../exceptions/api-errors');
+const ApiError = require('../exceptions/ApiErrors');
 
 module.exports.signUp = async (req, res, next) => {
   try {
