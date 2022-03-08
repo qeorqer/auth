@@ -2,7 +2,7 @@ const ApiError = require('../exceptions/ApiErrors');
 const { verifyAccess } = require('../services/token');
 
 module.exports = (req, res, next) => {
-  const headerToken = req.headers.authorization;
+  const headerToken = req.get('Authorization');
   if (!headerToken) {
     return next(ApiError.UnauthorizedError());
   }
