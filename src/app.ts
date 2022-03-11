@@ -1,13 +1,16 @@
-require('dotenv').config();
+import express, { Application } from 'express';
+import mongoose from 'mongoose';
+import { config } from 'dotenv';
 
-const express = require('express');
-const mongoose = require('mongoose');
+config();
+
 
 const userRouter = require('./routes/user');
 const errorMiddleware = require('./middlewares/error');
 
-const app = express();
-const PORT = process.env.PORT || 5000;
+const app: Application = express();
+const PORT: number = Number(process.env.PORT) || 5000!;
+const DB_URI:string = process.env.MONGO_URL!
 
 app.use(express.json());
 
@@ -16,10 +19,7 @@ app.use(errorMiddleware);
 
 const start = async () => {
   try {
-    await mongoose.connect(process.env.MONGO_URL, {
-      useNewUrlParser: true,
-      useUnifiedTopology: true,
-    });
+    await mongoose.connect(DB_URI);
 
     app.listen(PORT, () => console.log(`Server is running on ${PORT} port...`));
   } catch (error) {

@@ -13,6 +13,6 @@ module.exports = (req, res, next) => {
     return next(ApiError.UnauthorizedError());
   }
 
-  req.user = verified;
+  req.userId = verified.userId;
   next();
 };
