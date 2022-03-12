@@ -5,8 +5,8 @@ import { config } from 'dotenv';
 config();
 
 
-const userRouter = require('./routes/user');
-const errorMiddleware = require('./middlewares/error');
+import userRouter from './routes/user';
+import errorMiddleware from './middlewares/error';
 
 const app: Application = express();
 const PORT: number = Number(process.env.PORT) || 5000!;

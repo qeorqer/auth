@@ -1,6 +1,6 @@
 const { expect } = require('chai');
 const sinon = require('sinon');
-const authMiddleware = require('../src/middlewares/auth');
+const authMiddleware = require('../middlewares/auth');
 
 describe('Auth middleware', () => {
   it('should call next if error if no authorization header is present', () => {

@@ -1,7 +1,9 @@
-const ApiError = require('../exceptions/ApiErrors');
+import { NextFunction, Request, Response } from 'express';
+import ApiError from '../exceptions/ApiErrors';
+
 const { verifyAccess } = require('../services/token');
 
-module.exports = (req, res, next) => {
+const authMiddleware = (req: Request, res: Response, next: NextFunction) => {
   const headerToken = req.get('Authorization');
   if (!headerToken) {
     return next(ApiError.UnauthorizedError());
@@ -13,6 +15,8 @@ module.exports = (req, res, next) => {
     return next(ApiError.UnauthorizedError());
   }
 
-  req.userId = verified.userId;
+  req.body.userId = verified.userId;
   next();
 };
+
+export default authMiddleware;

@@ -1,9 +1,9 @@
-const { Router } = require('express');
-const { body, param } = require('express-validator');
+import { Router, Request, IRouter } from 'express';
+import { body, param } from 'express-validator';
 
-const userController = require('../controllers/user');
+import * as userController from '../controllers/user';
 
-const router = Router();
+const router: IRouter = Router();
 
 router.post(
   '/signup',
@@ -19,7 +19,7 @@ router.post(
       .withMessage('Password must contain at least 5 symbols'),
     body('confirmPassword')
       .trim()
-      .custom((value, { req }) => {
+      .custom((value: string, { req }: {req: any}) => {
         if (value !== req.body.password) {
           throw new Error('Passwords have to match');
         }
@@ -70,4 +70,4 @@ router.get(
   userController.activate,
 );
 
-module.exports = router;
+export default router;

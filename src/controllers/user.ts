@@ -1,9 +1,10 @@
-const { validationResult } = require('express-validator');
+import { Request, Response, NextFunction } from 'express';
+import { validationResult } from 'express-validator';
 
-const userService = require('../services/user');
-const ApiError = require('../exceptions/ApiErrors');
+import * as userService from '../services/user';
+import ApiError from '../exceptions/ApiErrors';
 
-module.exports.signUp = async (req, res, next) => {
+export const signUp = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const { email, password } = req.body;
     const errors = validationResult(req);
@@ -19,7 +20,7 @@ module.exports.signUp = async (req, res, next) => {
   }
 };
 
-module.exports.login = async (req, res, next) => {
+export const login = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const { email, password } = req.body;
     const errors = validationResult(req);
@@ -35,7 +36,7 @@ module.exports.login = async (req, res, next) => {
   }
 };
 
-module.exports.refresh = async (req, res, next) => {
+export const refresh = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const { refreshToken } = req.body;
     const errors = validationResult(req);
@@ -51,7 +52,7 @@ module.exports.refresh = async (req, res, next) => {
   }
 };
 
-module.exports.logOut = async (req, res, next) => {
+export const logOut = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const { refreshToken } = req.body;
     const errors = validationResult(req);
@@ -67,7 +68,7 @@ module.exports.logOut = async (req, res, next) => {
   }
 };
 
-module.exports.activate = async (req, res, next) => {
+export const activate = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const { link } = req.params;
     const errors = validationResult(req);

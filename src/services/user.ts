@@ -1,14 +1,15 @@
-const UUID = require('uuid');
-const bcrypt = require('bcrypt');
-const jwt = require('jsonwebtoken');
+import UUID from 'uuid';
+import bcrypt from 'bcrypt';
+import jwt from 'jsonwebtoken';
 
-const User = require('../models/user');
-const Token = require('../models/token');
-const { updateTokens } = require('./token');
-const { sendActivationMail } = require('./mail');
-const ApiError = require('../exceptions/ApiErrors');
+import User from '../models/user';
+import Token from '../models/token';
+import { updateTokens, updateTokensReturnType } from './token';
+import { sendActivationMail } from './mail';
+import ApiError from '../exceptions/ApiErrors';
+import { userType } from '../types/types';
 
-module.exports.signUp = async (email, password) => {
+export const signUp = async (email: string, password: string): Promise<void> => {
   const isEmailUsed = await User.findOne({ email });
   if (isEmailUsed) {
     throw ApiError.BadRequest('Email already taken');
@@ -23,7 +24,12 @@ module.exports.signUp = async (email, password) => {
   sendActivationMail(email, `${process.env.API_URL}/activate/${activationLink}`);
 };
 
-module.exports.logIn = async (email, password) => {
+type loginReturnType = {
+  tokens: updateTokensReturnType
+  user: userType
+}
+
+export const logIn = async (email: string, password: string): Promise<loginReturnType> => {
   const user = await User.findOne({ email });
 
   if (!user) {
@@ -45,13 +51,15 @@ module.exports.logIn = async (email, password) => {
   return { tokens, user };
 };
 
-module.exports.refresh = async (refreshToken) => {
-  const verifiedToken = jwt.verify(refreshToken, process.env.JWT_REFRESH_SECRET);
+export const refresh = async (refreshToken: string) => {
+  const verifiedToken = jwt.verify(refreshToken, process.env.JWT_REFRESH_SECRET!);
+  // @ts-ignore
   if (verifiedToken.type !== 'refresh') {
-    throw ApiError.UnauthorizedError('You are unauthorized');
+    throw ApiError.UnauthorizedError();
     throw new Error('');
   }
 
+  // @ts-ignore
   const token = await Token.findOne({ tokenId: verifiedToken.id });
   if (token === null) {
     throw ApiError.BadRequest('The token is invalid');
@@ -60,12 +68,13 @@ module.exports.refresh = async (refreshToken) => {
   return await updateTokens(token.userId, token.tokenId, true);
 };
 
-module.exports.logOut = async (refreshToken) => {
-  const verifiedToken = jwt.verify(refreshToken, process.env.JWT_REFRESH_SECRET);
+export const logOut = async (refreshToken: string) => {
+  const verifiedToken = jwt.verify(refreshToken, process.env.JWT_REFRESH_SECRET!);
+  // @ts-ignore
   return Token.findOneAndRemove({ tokenId: verifiedToken.id });
 };
 
-module.exports.activate = async (activationLink) => {
+export const activate = async (activationLink: string) => {
   const user = await User.findOne({ activationLink });
 
   if (!user) {
